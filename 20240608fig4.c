@@ -9,9 +9,9 @@
 #define b_max 200.0 // 4.767
 #define b_min 5.0
 #define mu 0.5
-#define v_muu 2.0
+#define v_muu 5.0//2.0
 #define d 1.0
-#define dt 1.0/200.0
+#define dt 1.0/(b_max+d+1.0)
 #define M  (int)b_max+1000 //500
 #define T  500
 #define T_f 2000
@@ -22,10 +22,10 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
 int main(){
     double con_a[N][N],P_list[2]={0.0},con_b[N][N],F_list[7]={0.5};//{0.1,0.5,1.0,2.0,3.0,10.0,100.0}
-    int i,j,k,l,m,h,q,con[N][N],Rsize,R_list[13]={5,7,9,10,13,17,20,30,40,50,60,70,80};
+    int i,j,k,l,m,h,q,con[N][N],Rsize,R_list[13]={80};//{5,7,9,10,13,17,20,30,40,50,60,70,80};
     double a,b,pr,def;
     a=1.0;
-    b=5.0;Rsize=13;
+    b=5.0;Rsize=1;
     FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
 
@@ -266,6 +266,8 @@ int main(){
 double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int a){
     int i,j,k,m,l,MM;
     double v_mu,pr;
+    FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
+    char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
     srand((unsigned int)time(NULL));
 
     if(a==0){v_mu=0;MM=100;}else{v_mu=v_muu;MM=M;}
@@ -524,6 +526,8 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
         vir=(double)vir/ni;
     x[j]=j;
     y[j]=vir;
+
+    
     // if(f_size==0){
     //     y1[j]=y1[j]+vir;
                     
@@ -533,6 +537,40 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                 
 
     }
+    data_file1="Fig4_beta.dat";
+        // data_file1="outadde_f.dat";
+        data1=fopen(data_file1,"w");
+        for(l=0;l<T;l++){
+            fprintf(data1,"%d\t%f\n",l,y[l]);
+        }
+        fclose(data1);
+        gp=popen("gnuplot -persist","w");
+        fprintf(gp,"set terminal png\n");
+        // fprintf(gp,"set logscale\n");
+        // fprintf(gp,"set output 'Addefunction_f_%2f_P_%2f.png'\n",F_list[0],P_list[0]);
+        fprintf(gp,"set output 'Fig4_beta_%2f.png'\n",r);
+
+        
+        fprintf(gp,"set xrange [0:%d]\n",T);
+        fprintf(gp,"set xlabel 'T'\n");
+        fprintf(gp,"set yrange [0:%f]\n",b_max+10.0);//5.0
+        fprintf(gp,"set ylabel 'beta'\n");
+        
+
+        fprintf(gp,"plot \'%s\'using 1:2 with lines linetype 1 linecolor rgb 'red'\n",data_file1);
+        // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"f=%f \"",data_file1,F_list[0]);
+        // for(l=1;l<6;l++){
+        //     fprintf(gp,",\'%s\' using 1:%d with lines linetype %d title \"f=%f \"",data_file1,l+2,l+1,F_list[l]);
+        // }
+        // fprintf(gp,",\'%s\' using 1:%d with lines linetype %d title \"f=%f \"\n",data_file1,9,8,F_list[6]);
+        
+        
+        
+        pclose(gp);
+
+
+
+
     pr=0.0;
     for(l=T-50;l<T;l++){
         pr=pr+y[l];
