@@ -17,15 +17,15 @@
 #define T_f 2000
 #define Q 1    //平均を取るための試行回数
 
-double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int a);
+double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g);
 
 
 int main(){
     double con_a[N][N],P_list[2]={0.0},con_b[N][N],F_list[7]={0.5};//{0.1,0.5,1.0,2.0,3.0,10.0,100.0}
-    int i,j,k,l,m,h,q,con[N][N],Rsize,R_list[13]={80};//{5,7,9,10,13,17,20,30,40,50,60,70,80};
+    int i,j,k,l,m,h,q,con[N][N],Rsize,R_list[13]={5,7,9,10,13,17,20,30,40,50,60,70,80};
     double a,b,pr,def;
     a=1.0;
-    b=5.0;Rsize=1;
+    b=5.0;Rsize=13;
     FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
 
@@ -43,11 +43,19 @@ int main(){
             for(i=0;i<1;i++){
                 
                 printf("P=%f\n",P_list[i]);
+                /*conの初期化(part1)*/
+                for(j=0;j<N;j++){
+                    for(k=0;k<N;k++){
+                        con[j][k]=0;
+                        con_a[j][k]=0;
+                        con_b[j][k]=0;
+                    }
+                }
                 /*conの初期化(part2)*/
                 for(j=0;j<N;j++){
                     for(k=0;k<N;k++){
                         int n;
-                        n =(int)rand()%2;
+                        n =(int)rand()%3;
                         if(n==0){
                             con[j][k]=0;
                             con_a[j][k]=0;
@@ -58,19 +66,24 @@ int main(){
                             con_a[j][k]=0;
                             con_b[j][k]=0;
 
-                        }
-                    }
-                }
-                for(j=0;j<N;j++){
-                    for(k=0;k<N;k++){
-                       if((double)rand()/RAND_MAX < 1.0/100){
+                        }else{
                             con[j][k]=2;
                             con_a[j][k]=a;
                             con_b[j][k]=b;
-                            // printf("侵入完了");
-                       } 
+
+                        }
                     }
                 }
+                // for(j=0;j<N;j++){
+                //     for(k=0;k<N;k++){
+                //        if((double)rand()/RAND_MAX < 1.0/100){
+                //             con[j][k]=2;
+                //             con_a[j][k]=a;
+                //             con_b[j][k]=b;
+                //             // printf("侵入完了");
+                //        } 
+                //     }
+                // }
 
             def=infection(con,con_a,con_b,P_list,F_list,R_list[h],i,0,x,y1,S,I,O,0);
             printf("%f\n",def);    
@@ -263,14 +276,15 @@ int main(){
 
 
 // void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],int P_size,int f_size,int x[],double y[],int S[],int E[],int I[],int O[],int a);
-double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int a){
+double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g){
     int i,j,k,m,l,MM;
-    double v_mu,pr;
+    double v_mu,pr,a;
+    a=1.0;
     FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
     srand((unsigned int)time(NULL));
 
-    if(a==0){v_mu=0;MM=100;}else{v_mu=v_muu;MM=M;}
+    if(g==0){v_mu=0;MM=100;}else{v_mu=v_muu;MM=M;}
     for(j=0;j<T;j++){ //M
         double vir;
         int ni,ne;

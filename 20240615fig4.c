@@ -36,13 +36,13 @@ int main(){
 
     printf("%d",Rsize);
 
-    data_file2="Disbef.dat";
+    data_file2="0625Disbef.dat";
     
     for(q=0;q<Q;q++){
         for(h=0;h<Rsize;h++){
             printf("R=%d\n",R_list[h]); 
-            for(i=0;i<240;i++){
-                b=20.0+i*2.0;
+            for(i=0;i<60;i++){
+                b=20.0+i*5.0;
                 // printf("P=%f\n",P_list[0]);
                 /*conの初期化(part1)*/
                 for(j=0;j<N;j++){
@@ -56,7 +56,7 @@ int main(){
                 for(j=0;j<N;j++){
                     for(k=0;k<N;k++){
                         int n;
-                        n =(int)rand()%2;
+                        n =(int)rand()%3;
                         if(n==0){
                             con[j][k]=0;
                             con_a[j][k]=0;
@@ -68,24 +68,30 @@ int main(){
                             con_b[j][k]=0;
 
                         }
-                    }
-                }
-                for(j=0;j<N;j++){
-                    for(k=0;k<N;k++){
-                       if((double)rand()/RAND_MAX < 1.0/100){
+                        else{
                             con[j][k]=2;
                             con_a[j][k]=a;
                             con_b[j][k]=b;
-                            // printf("侵入完了");
-                       } 
+
+                        }
                     }
                 }
+                // for(j=0;j<N;j++){
+                //     for(k=0;k<N;k++){
+                //        if((double)rand()/RAND_MAX < 1.0/100){
+                //             con[j][k]=2;
+                //             con_a[j][k]=a;
+                //             con_b[j][k]=b;
+                //             // printf("侵入完了");
+                //        } 
+                //     }
+                // }
 
             def=infection(con,con_a,con_b,P_list,F_list,R_list[h],0,0,x,y1,S,I,O,0);
             
             if(def==0){
                 printf("0になったよ");
-                break;
+                continue;
             }else{
                 y2[h]=def;
             }
@@ -119,7 +125,7 @@ int main(){
                 gp=popen("gnuplot -persist","w");
                 fprintf(gp,"set terminal png\n");
                 
-                fprintf(gp,"set output 'Disbef_%2d.png'\n",R_list[h]);
+                fprintf(gp,"set output '0625Disbef_%2d.png'\n",R_list[h]);
             
 
                 
@@ -163,7 +169,7 @@ int main(){
     // }
 
     //図の描画
-        data_file1="Diseaseex.dat";
+        data_file1="0625ex.dat";
         // data_file1="outadde_f.dat";
         data1=fopen(data_file1,"w");
         for(l=0;l<Rsize;l++){
@@ -174,7 +180,7 @@ int main(){
         fprintf(gp,"set terminal png\n");
         fprintf(gp,"set logscale\n");
         // fprintf(gp,"set output 'Addefunction_f_%2f_P_%2f.png'\n",F_list[0],P_list[0]);
-        fprintf(gp,"set output 'Diseaseex.png'\n");
+        fprintf(gp,"set output '0625ex.png'\n");
 
         
         fprintf(gp,"set xrange [0:%d]\n",500);
@@ -214,7 +220,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
     srand((unsigned int)time(NULL));
 
-    if(g==0){v_mu=0;MM=500;}else{v_mu=v_muu;MM=M;}
+    if(g==0){v_mu=0;MM=510;}else{v_mu=v_muu;MM=M;}
     for(j=0;j<T;j++){ //M
         double vir;
         int ni,ne;
