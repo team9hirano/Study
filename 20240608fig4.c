@@ -7,7 +7,7 @@
 #define a_max 4.767 // 4.767
 #define a_min 0.2
 #define b_max 200.0 // 4.767
-#define b_min 5.0
+#define b_min 8.0
 #define mu 0.5
 #define v_muu 5.0//2.0
 #define d 1.0
