@@ -21,11 +21,11 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
 
 int main(){
-    double con_a[N][N],P_list[2]={0.0},con_b[N][N],F_list[7]={0.5};//{0.1,0.5,1.0,2.0,3.0,10.0,100.0}
-    int i,j,k,l,m,h,q,con[N][N],Rsize,R_list[22]={5,7,9,10,13,17,20,30,40,50,60,70,80,90,100,120,140,160,180,200,250,300};
+    double con_a[N][N],P_list[2]={1.0},con_b[N][N],F_list[7]={0.5};//{0.1,0.5,1.0,2.0,3.0,10.0,100.0}
+    int i,j,k,l,m,h,q,con[N][N],Rsize,R_list[22]={2,3,4,5,7,9,13,17,20,30,50,60,80,100,140,180,200,300};
     double a,b,pr,def,c;
     a=1.0;c=0.0;
-    b=5.0;Rsize=22;//24;
+    b=5.0;Rsize=18;//24;
     FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
 
@@ -41,8 +41,9 @@ int main(){
     for(q=0;q<Q;q++){
         for(h=0;h<Rsize;h++){
             printf("R=%d\n",R_list[h]); 
-            for(i=0;i<240;i++){
-                b=20.0+i*2.0;
+            for(i=0;i<100;i++){
+                //b=400;
+                b=30.0+i*3.0;
                 // printf("P=%f\n",P_list[0]);
                 /*conの初期化(part1)*/
                 for(j=0;j<N;j++){
@@ -56,7 +57,7 @@ int main(){
                 for(j=0;j<N;j++){
                     for(k=0;k<N;k++){
                         int n;
-                        n =(int)rand()%2;
+                        n =(int)rand()%3;
                         if(n==0){
                             con[j][k]=0;
                             con_a[j][k]=0;
@@ -68,31 +69,57 @@ int main(){
                             con_b[j][k]=0;
 
                         }
-                    }
-                }
-                for(j=0;j<N;j++){
-                    for(k=0;k<N;k++){
-                       if((double)rand()/RAND_MAX < 1.0/100){
+                        else{
                             con[j][k]=2;
                             con_a[j][k]=a;
                             con_b[j][k]=b;
-                            // printf("侵入完了");
-                       } 
+
+                        }
                     }
                 }
+                // for(j=0;j<N;j++){
+                //     for(k=0;k<N;k++){
+                //         int n;
+                //         n =(int)rand()%2;
+                //         if(n==0){
+                //             con[j][k]=0;
+                //             con_a[j][k]=0;
+                //             con_b[j][k]=0;
+                //         }
+                //         else if(n==1){
+                //             con[j][k]=1;
+                //             con_a[j][k]=0;
+                //             con_b[j][k]=0;
+
+                //         }
+                //     }
+                // }
+                // for(j=0;j<N;j++){
+                //     for(k=0;k<N;k++){
+                //        if((double)rand()/RAND_MAX < 1.0/100){
+                //             con[j][k]=2;
+                //             con_a[j][k]=a;
+                //             con_b[j][k]=b;
+                //             // printf("侵入完了");
+                //        } 
+                //     }
+                // }
 
             def=infection(con,con_a,con_b,P_list,F_list,R_list[h],0,0,x,y1,S,I,O,0);
             
-            if(def==0){
-                printf("0になったよ");
-                break;
-            }else{
-                y2[h]=def;
-            }
-            printf("%f\n",def);    
-            // printf("でたよー");    
+               
             /*変異株導入*/
                 
+
+            
+
+            if(def==0){
+                //printf("0になったよ");
+                continue;
+            }else{
+                y2[h]=def;
+                printf("%f\n",def); 
+            }
 
             int ns,ni,ne,no;
             ns=0,ni=0,ne=0;
@@ -129,10 +156,6 @@ int main(){
                 fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"P= %f  S \",\'%s\' using 1:3 with lines linetype 2 title \"I \",\'%s\' using 1:4 with lines linetype 3 title \"0\"\n",data_file2,P_list[0],data_file2,data_file2);
                 
                 pclose(gp);
-
-
-
-
 
 
 
@@ -209,16 +232,17 @@ int main(){
 double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g){
     int i,j,k,m,l,MM;
     double v_mu,pr,a;
+    double vir;
+    int ni,ne,ns;
+    int ss,ee,ii,oo;
     a=1.0;
     FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
     srand((unsigned int)time(NULL));
 
-    if(g==0){v_mu=0;MM=500;}else{v_mu=v_muu;MM=M;}
+    if(g==0){v_mu=0;MM=100;}else{v_mu=v_muu;MM=M;}//MM=100
     for(j=0;j<T;j++){ //M
-        double vir;
-        int ni,ne;
-        int ss,ee,ii,oo;
+        
         for(k=0;k<MM*N*N;k++){
             int x,y,n;
             x=(int)rand()%N,y=(int)rand()%N;
@@ -267,25 +291,26 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                 if(pr < con_b[x][y]*dt){
                     if( (double)rand()/RAND_MAX < P_list[P_size]){
                         if(con[xx][yy]==1){
-                            con[xx][yy]=2;
+                            con[xx][yy]=2;con_a[xx][yy]=a;
                             if((double)rand()/RAND_MAX<mu*dt){
                                 if((double)rand()/RAND_MAX<0.5){
-                                    con_a[xx][yy]=con_a[x][y]+v_mu;
-                                    if(con_a[xx][yy]>a_max){
-                                        con_a[xx][yy]=a_max;
+                                    con_b[xx][yy]=con_b[x][y]+v_mu;
+                                    if(con_b[xx][yy]>b_max){
+                                        con_b[xx][yy]=b_max;
                                     }
                                 }else{
-                                    con_a[xx][yy]=con_a[x][y]-v_mu;
-                                    if(con_a[xx][yy]<a_min){
-                                        con_a[xx][yy]=a_min;
+                                    con_b[xx][yy]=con_b[x][y]-v_mu;
+                                    if(con_b[xx][yy]<b_min){
+                                        con_b[xx][yy]=b_min;
                                     }
                                                         
                                 }
-                                con_b[xx][yy]=3*con_a[xx][yy];
+                                //con_b[xx][yy]=3*con_a[xx][yy];
+                                con_b[xx][yy]=con_b[x][y];
                             }
                             else{
-                                con_a[xx][yy]=con_a[x][y];
-                                con_b[xx][yy]=3*con_a[xx][yy];
+                                //con_a[xx][yy]=a;
+                                con_b[xx][yy]=con_b[x][y];
                             }
                                         
                         }
@@ -308,6 +333,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                                                             
                                     }
                                     // con_b[(x-1)%N][y]=3*con_a[(x-1)%N][y];
+                                    con_b[(x-1)%N][y]=con_b[x][y];
                                 }
                                 else{
                                     con_b[(x-1)%N][y]=con_b[x][y];
@@ -332,6 +358,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                                                             
                                     }
                                     // con_b[(x+1)%N][y]=3*con_a[(x-1)%N][y];
+                                    con_b[(x+1)%N][y]=con_b[x][y];
                                     }
                                     else{
                                         con_b[(x+1)%N][y]=con_b[x][y];
@@ -357,6 +384,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                                                             
                                     }
                                     // con_b[x][(y-1)%N]=3*con_a[x][(y-1)%N];
+                                    con_b[x][(y-1)%N]=con_b[x][y];
                                 }
                                 else{
                                     con_b[x][(y-1)%N]=con_b[x][y];
@@ -380,7 +408,8 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                                         }
                                                             
                                     }
-                                    // con_b[x][(y-1)%N]=3*con_a[x][(y-1)%N];
+                                    //con_b[x][(y-1)%N]=con_b[x][(y-1)%N];
+                                    con_b[x][(y+1)%N]=con_b[x][y];
                                 }
                                 else{
                                     con_b[x][(y+1)%N]=con_b[x][y];
@@ -396,27 +425,27 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                     con_b[x][y]=0;
                 }
                             
-                else{
-                    if((double)rand()/RAND_MAX<mu*dt){
-                            if((double)rand()/RAND_MAX<0.5){
-                                con_a[x][y]=con_a[x][y]+v_mu;
-                                if(con_b[x][y]>b_max){
-                                    con_b[x][y]=b_max;
-                                }
+                // else{
+                //     if((double)rand()/RAND_MAX<mu*dt){
+                //             if((double)rand()/RAND_MAX<0.5){
+                //                 con_a[x][y]=con_a[x][y]+v_mu;
+                //                 if(con_b[x][y]>b_max){
+                //                     con_b[x][y]=b_max;
+                //                 }
                                             
-                            }
-                            else{
-                                con_b[x][y]=con_b[x][y]-v_mu;
-                                if(con_b[x][y]<b_min){
-                                    con_b[x][y]=b_min;
-                                }
+                //             }
+                //             else{
+                //                 con_b[x][y]=con_b[x][y]-v_mu;
+                //                 if(con_b[x][y]<b_min){
+                //                     con_b[x][y]=b_min;
+                //                 }
                                             
-                            }
-                        // con_b[x][y]=3*con_a[x][y];
-                    }
+                //             }
+                //         // con_b[x][y]=3*con_a[x][y];
+                //     }
                                     
                                 
-                }    
+                // }    
                             
                             
                             
@@ -429,11 +458,12 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
 
         }
-        ss=0,ii=0,ee=0,oo=0;
+        ss=0,ii=0,ee=0,oo=0;vir=0.0;
         for(l=0;l<N;l++){
             for(m=0;m<N;m++){
                 if(con[l][m]==2){
                     ii=ii+1;
+                    vir=vir+con_b[l][m];
                 }
                 else if(con[l][m]==1){
                     ss=ss+1;
@@ -446,32 +476,41 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
             }
 
         }
-        S[j]=ss;I[j]=ii;O[j]=oo;
+        if(ss==0 || ii==0){
+             return 0; 
+        }            
+        else{vir=(double)vir/ii;}
+        S[j]=ss;I[j]=ii;O[j]=oo;x[j]=j;y[j]=vir;
+    
                     
 
 
 
 
-        vir=0.0,ni=0,ne=0;
-        for(l=0;l<N;l++){
-            for(m=0;m<N;m++){
-                if(con[l][m]==2){
-                    ni=ni+1;
-                    vir=vir+con_b[l][m];
+    //     vir=0.0,ni=0,ne=0;
+    //     for(l=0;l<N;l++){
+    //         for(m=0;m<N;m++){
+    //             if(con[l][m]==2){
+    //                 ni=ni+1;
+    //                 vir=vir+con_b[l][m];
                                 
-                }
+    //             }
+    //             else if(con[l][m]==1){
+    //                 ns=ns+1;
+    //             }
                             
 
-            }
+    //         }
 
-        }
+    //     }
                     
-        if(ni==0){
-            return 0; 
-        }            
-        else {vir=(double)vir/ni;}
-    x[j]=j;
-    y[j]=vir;
+    //     if(ni==0){
+    //          return 0; 
+    //     }            
+    //     else {vir=(double)vir/ni;}
+    //     //vir=(double)vir/ni;
+    // x[j]=j;
+    // y[j]=vir;
 
     
     // if(f_size==0){
@@ -497,7 +536,3 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
     }
     pr=pr/50.0;return pr;
 }
-
-
-
-

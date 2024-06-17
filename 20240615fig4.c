@@ -56,7 +56,7 @@ int main(){
                 for(j=0;j<N;j++){
                     for(k=0;k<N;k++){
                         int n;
-                        n =(int)rand()%3;
+                        n =(int)rand()%2;
                         if(n==0){
                             con[j][k]=0;
                             con_a[j][k]=0;
@@ -76,16 +76,16 @@ int main(){
                         }
                     }
                 }
-                // for(j=0;j<N;j++){
-                //     for(k=0;k<N;k++){
-                //        if((double)rand()/RAND_MAX < 1.0/100){
-                //             con[j][k]=2;
-                //             con_a[j][k]=a;
-                //             con_b[j][k]=b;
-                //             // printf("侵入完了");
-                //        } 
-                //     }
-                // }
+                for(j=0;j<N;j++){
+                     for(k=0;k<N;k++){
+                        if((double)rand()/RAND_MAX < 1.0/100){
+                             con[j][k]=2;
+                             con_a[j][k]=a;
+                             con_b[j][k]=b;
+                             // printf("侵入完了");
+                        } 
+                     }
+                 }
 
             def=infection(con,con_a,con_b,P_list,F_list,R_list[h],0,0,x,y1,S,I,O,0);
             
@@ -220,7 +220,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
     srand((unsigned int)time(NULL));
 
-    if(g==0){v_mu=0;MM=510;}else{v_mu=v_muu;MM=M;}
+    if(g==0){v_mu=0;MM=100;}else{v_mu=v_muu;MM=M;}
     for(j=0;j<T;j++){ //M
         double vir;
         int ni,ne;
@@ -273,7 +273,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                 if(pr < con_b[x][y]*dt){
                     if( (double)rand()/RAND_MAX < P_list[P_size]){
                         if(con[xx][yy]==1){
-                            con[xx][yy]=2;
+                            con[xx][yy]=2;con_a[xx][yy]=a;
                             if((double)rand()/RAND_MAX<mu*dt){
                                 if((double)rand()/RAND_MAX<0.5){
                                     con_a[xx][yy]=con_a[x][y]+v_mu;
@@ -287,11 +287,11 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                                     }
                                                         
                                 }
-                                con_b[xx][yy]=3*con_a[xx][yy];
+                                con_b[xx][yy]=con_b[x][y];
                             }
                             else{
                                 con_a[xx][yy]=con_a[x][y];
-                                con_b[xx][yy]=3*con_a[xx][yy];
+                                con_b[xx][yy]=con_b[x][y];
                             }
                                         
                         }
@@ -314,6 +314,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                                                             
                                     }
                                     // con_b[(x-1)%N][y]=3*con_a[(x-1)%N][y];
+                                    con_b[(x-1)%N][y]=con_b[x][y];
                                 }
                                 else{
                                     con_b[(x-1)%N][y]=con_b[x][y];
@@ -338,6 +339,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                                                             
                                     }
                                     // con_b[(x+1)%N][y]=3*con_a[(x-1)%N][y];
+                                    con_b[(x+1)%N][y]=con_b[x][y];
                                     }
                                     else{
                                         con_b[(x+1)%N][y]=con_b[x][y];
@@ -363,6 +365,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                                                             
                                     }
                                     // con_b[x][(y-1)%N]=3*con_a[x][(y-1)%N];
+                                    con_b[x][(y-1)%N]=con_b[x][y];
                                 }
                                 else{
                                     con_b[x][(y-1)%N]=con_b[x][y];
@@ -387,6 +390,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                                                             
                                     }
                                     // con_b[x][(y-1)%N]=3*con_a[x][(y-1)%N];
+                                    con_b[x][(y+1)%N]=con_b[x][y];
                                 }
                                 else{
                                     con_b[x][(y+1)%N]=con_b[x][y];
@@ -402,27 +406,27 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                     con_b[x][y]=0;
                 }
                             
-                else{
-                    if((double)rand()/RAND_MAX<mu*dt){
-                            if((double)rand()/RAND_MAX<0.5){
-                                con_a[x][y]=con_a[x][y]+v_mu;
-                                if(con_b[x][y]>b_max){
-                                    con_b[x][y]=b_max;
-                                }
+                // else{
+                //     if((double)rand()/RAND_MAX<mu*dt){
+                //             if((double)rand()/RAND_MAX<0.5){
+                //                 con_a[x][y]=con_a[x][y]+v_mu;
+                //                 if(con_b[x][y]>b_max){
+                //                     con_b[x][y]=b_max;
+                //                 }
                                             
-                            }
-                            else{
-                                con_b[x][y]=con_b[x][y]-v_mu;
-                                if(con_b[x][y]<b_min){
-                                    con_b[x][y]=b_min;
-                                }
+                //             }
+                //             else{
+                //                 con_b[x][y]=con_b[x][y]-v_mu;
+                //                 if(con_b[x][y]<b_min){
+                //                     con_b[x][y]=b_min;
+                //                 }
                                             
-                            }
-                        // con_b[x][y]=3*con_a[x][y];
-                    }
+                //             }
+                //         // con_b[x][y]=3*con_a[x][y];
+                //     }
                                     
                                 
-                }    
+                // }    
                             
                             
                             
