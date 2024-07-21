@@ -17,7 +17,7 @@
 #define T_f 2000
 #define Q 1    //平均を取るための試行回数
 
-double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g,int a);
+void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g,int a);
 int sum(int con[][N],int l,int m,int a,int b,int c);
 
 int main(){
@@ -110,9 +110,9 @@ int main(){
                 //        } 
                 //     }
                 // }
-
-            def=infection(con,con_a,con_b,P_list,F_list,R_list[h],0,0,x,y1,S,I,O,0,a);
-            printf("def=%f",def);
+            printf("yes\n");
+            infection(con,con_a,con_b,P_list,F_list,R_list[h],0,0,x,y1,S,I,O,0,a);
+            printf("yes\n");
             int ns,ni,ne,no,i_s,i_i,i_o,s_s,s_i,s_o,o_s,o_i,o_o;
             ns=0;ni=0;ne=0;no=0;i_s=0;i_i=0;i_o=0;s_s=0;s_i=0;s_o=0;o_s=0;o_i=0;o_o=0;
             for(l=0;l<N;l++){
@@ -132,12 +132,12 @@ int main(){
                         
                 }
             }
-            printf("i");
-            printf("ns=%d,no=%d,ni=%d",ns,no,ni); 
-            y3[i]=b;y4[i]=ni;q_si=(double)i_s/(4*ni);printf("q_si=%f",q_si);
+            printf("i\n");
+            printf("ns=%d,no=%d,ni=%d\n",ns,no,ni); 
+            y3[i]=b;y4[i]=ni;q_si=(double)i_s/(4*ni);printf("q_si=%f\n",q_si);
             /*変異株導入*/
             for(l=1;l<100;l++){ 
-                nj=0;j_o=0;j_s=0;j_i=0;j_j=0;ramda=0;count=0;
+                nj=0;j_o=0;j_s=0;j_i=0;j_j=0;ramda=0;count=0;q_sj=0.0;
                 for(j=0;j<N;j++){
                     for(k=0;k<N;k++){
                         if(con[j][k]==2){
@@ -145,7 +145,7 @@ int main(){
                                 con[j][k]=3;
                                 con_a[j][k]=l*0.01;
                                 con_b[j][k]=3*con_a[j][k];
-                                j_s=sum(con,j,k,j_i,j_s,j_o);nj=nj+1;
+                                j_s=sum(con,j,k,j_i,j_s,j_o);nj=nj+1;printf("j_s=%d\n",j_s);
                                 // if((double)rand()/RAND_MAX < 0.5){
                                 //     // con_a[j][k]=a+v_muu;
                                 //     con_b[j][k]=con_b[j][k]+v_muu;
@@ -166,7 +166,7 @@ int main(){
                         }
                     }
                 }
-                q_sj=j_s/(4*nj);ramda=(d+a)/b-(d+l*0.01)/(3*l*0.01)+(1-P_list[0])*(q_sj-q_si);
+                q_sj=(double)j_s/(4*nj);ramda=(d+a)/b-(d+l*0.01)/(3*l*0.01)+(1-P_list[0])*(q_sj-q_si);printf("nj=%d,q_sj=%f,ramda=%f\n",nj,q_sj,ramda);
                 if(ramda>0){
                     if(count==0){
                         a_low[i]=l*0.01;
@@ -264,7 +264,7 @@ int main(){
 
 
 // void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],int P_size,int f_size,int x[],double y[],int S[],int E[],int I[],int O[],int a);
-double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g,int a){
+void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g,int a){
     int i,j,k,m,l,MM;
     double v_mu,pr;
     double vir;
@@ -277,7 +277,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
     if(g==0){v_mu=0;MM=100;}else{v_mu=v_muu;MM=M;}//MM=100
     for(j=0;j<T;j++){ //M
-        printf("OK");
+        //printf("OK");
         for(k=0;k<MM*N*N;k++){
             int x,y,n;
             x=(int)rand()%N,y=(int)rand()%N;
@@ -521,11 +521,11 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
         }
         S[j]=ss;I[j]=ii;O[j]=oo;x[j]=j;
-        if(ss==0 && ii==0){
-             return 0; 
-        }            
-        else{vir=(double)vir/ii;}//vir=(double)vir/ii;
-        y[j]=vir;
+        // if(ss==0 && ii==0){
+        //      return 0; 
+        // }            
+        // else{vir=(double)vir/ii;}//vir=(double)vir/ii;
+        // y[j]=vir;
     
                     
 
@@ -575,11 +575,11 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
 
 
-    pr=0.0;
-    for(l=T-50;l<T;l++){
-        pr=pr+y[l];
-    }
-    pr=pr/50.0;return pr;
+    // pr=0.0;
+    // for(l=T-50;l<T;l++){
+    //     pr=pr+y[l];
+    // }
+    // pr=pr/50.0;return pr;
 }
 
 
