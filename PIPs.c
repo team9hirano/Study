@@ -17,8 +17,8 @@
 #define T_f 2000
 #define Q 1    //平均を取るための試行回数
 
-void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g,int a);
-int sum(int con[][N],int l,int m,int a,int b,int c);
+void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g,double a);
+void sum(int con[][N],int l,int m,int *i,int *s,int *o);
 
 int main(){
     double con_a[N][N],P_list[2]={0.0},con_b[N][N],F_list[7]={0.5};//{0.1,0.5,1.0,2.0,3.0,10.0,100.0}
@@ -47,6 +47,7 @@ int main(){
             printf("R=%f\n",R_list[h]); 
             for(i=0;i<20;i++){
                 //b=400;
+                count=0;
                 y1[i]=0.01+0.05*i;
                 a=0.01+0.05*i;
                 b=3*a;
@@ -110,9 +111,9 @@ int main(){
                 //        } 
                 //     }
                 // }
-            printf("yes\n");
+            //printf("yes\n");
             infection(con,con_a,con_b,P_list,F_list,R_list[h],0,0,x,y1,S,I,O,0,a);
-            printf("yes\n");
+            //printf("yes\n");
             int ns,ni,ne,no,i_s,i_i,i_o,s_s,s_i,s_o,o_s,o_i,o_o;
             ns=0;ni=0;ne=0;no=0;i_s=0;i_i=0;i_o=0;s_s=0;s_i=0;s_o=0;o_s=0;o_i=0;o_o=0;
             for(l=0;l<N;l++){
@@ -120,7 +121,7 @@ int main(){
                     //i_s=0;i_i=0;i_o=0;s_s=0;s_i=0;s_o=0;o_s=0;o_i=0;o_o=0;
                     if(con[l][m]==2){
                         ni=ni+1;
-                        i_s=sum(con,l,m,i_i,i_s,i_o);
+                        sum(con,l,m,&i_i,&i_s,&i_o);
 
                     }else if(con[l][m]==1){
                         ns=ns+1;
@@ -134,18 +135,22 @@ int main(){
             }
             printf("i\n");
             printf("ns=%d,no=%d,ni=%d\n",ns,no,ni); 
-            y3[i]=b;y4[i]=ni;q_si=(double)i_s/(4*ni);printf("q_si=%f\n",q_si);
+            y3[i]=b;y4[i]=ni;
+            if(ni==0){
+                q_si=0.0;
+            }else{q_si=(double)i_s/(4*ni);}
+            printf("q_si=%f\n",q_si);
             /*変異株導入*/
             for(l=1;l<100;l++){ 
-                nj=0;j_o=0;j_s=0;j_i=0;j_j=0;ramda=0;count=0;q_sj=0.0;
+                nj=0;j_o=0;j_s=0;j_i=0;j_j=0;ramda=0;q_sj=0.0;
                 for(j=0;j<N;j++){
                     for(k=0;k<N;k++){
                         if(con[j][k]==2){
                             if((double)rand()/RAND_MAX < 0.1){
-                                con[j][k]=3;
+                                //con[j][k]=3;
                                 con_a[j][k]=l*0.01;
                                 con_b[j][k]=3*con_a[j][k];
-                                j_s=sum(con,j,k,j_i,j_s,j_o);nj=nj+1;printf("j_s=%d\n",j_s);
+                                sum(con,j,k,&j_i,&j_s,&j_o);nj=nj+1;//printf("j_s=%d\n",j_s);
                                 // if((double)rand()/RAND_MAX < 0.5){
                                 //     // con_a[j][k]=a+v_muu;
                                 //     con_b[j][k]=con_b[j][k]+v_muu;
@@ -166,7 +171,10 @@ int main(){
                         }
                     }
                 }
-                q_sj=(double)j_s/(4*nj);ramda=(d+a)/b-(d+l*0.01)/(3*l*0.01)+(1-P_list[0])*(q_sj-q_si);printf("nj=%d,q_sj=%f,ramda=%f\n",nj,q_sj,ramda);
+                if(nj==0){
+                q_sj=0.0;
+                }else{q_sj=(double)j_s/(4*nj);}
+                ramda=(d+a)/b-(d+l*0.01)/(3*l*0.01)+(1-P_list[0])*(q_sj-q_si);//printf("nj=%d,q_sj=%f,ramda=%f\n",nj,q_sj,ramda);
                 if(ramda>0){
                     if(count==0){
                         a_low[i]=l*0.01;
@@ -241,7 +249,7 @@ int main(){
         fprintf(gp,"set ylabel 'alpha_J'\n");
         // fprintf(gp,"f(x)=2*x/(x-1)\n");
 
-        fprintf(gp,"plot \'%s\'using 1:2 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:3 with lines linetype 1 linecolor rgb 'yellow'\n",data_file1,data_file1);
+        fprintf(gp,"plot \'%s\'using 1:2 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:3 with lines linetype 1 linecolor rgb 'red'\n",data_file1,data_file1);
         // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"f=%f \"",data_file1,F_list[0]);
         // for(l=1;l<6;l++){
         //     fprintf(gp,",\'%s\' using 1:%d with lines linetype %d title \"f=%f \"",data_file1,l+2,l+1,F_list[l]);
@@ -264,7 +272,7 @@ int main(){
 
 
 // void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],int P_size,int f_size,int x[],double y[],int S[],int E[],int I[],int O[],int a);
-void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g,int a){
+void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g,double a){
     int i,j,k,m,l,MM;
     double v_mu,pr;
     double vir;
@@ -583,53 +591,53 @@ void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],
 }
 
 
-int sum(int con[][N],int l,int m,int i,int s,int o){
+void sum(int con[][N],int l,int m,int *i,int *s,int *o){
     int n;                    
                     
     for(n=0;n<4;n++){
         if(n==0){
             if(con[(l-1)%N][m]==2){
-                i=i+1;
+                *i=*i+1;
             }
             else if(con[(l-1)%N][m]==1){
-                s=s+1;
+                *s=*s+1;
             }
             else{
-                o=o+1;
+                *o=*o+1;
             }
         }else if(n==1){
             if(con[(l+1)%N][m]==2){
-                i=i+1;
+                *i=*i+1;
             }
             else if(con[(l+1)%N][m]==1){
-                s=s+1;
+                *s=*s+1;
             }
             else{
-                o=o+1;
+                *o=*o+1;
             }
         }else if(n==2){
             if(con[l][(m-1)%N]==2){
-                i=i+1;
+                *i=*i+1;
             }
             else if(con[l][(m-1)%N]==1){
-                s=s+1;
+                *s=*s+1;
             }
             else{
-                o=o+1;
+                *o=*o+1;
             }
         }else{
             if(con[l][(m+1)%N]==2){
-                i=i+1;
+                *i=*i+1;
             }
             else if(con[l][(m+1)%N]==1){
-                s=s+1;
+                *s=*s+1;
             }
             else{
-                o=o+1;
+                *o=*o+1;
             }
         }
     }
-    return s;
+
 
 
 }
