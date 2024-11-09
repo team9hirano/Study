@@ -25,11 +25,11 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
 int main(){
     double con_a[N][N],P_list[2]={0.0},con_b[N][N],F_list[7]={0.5};//{0.1,0.5,1.0,2.0,3.0,10.0,100.0}
-    double A_list[15]={0.1,0.2,0.3,0.4,0.5,0.7,0.9,1.0};//5.0,7.0,8.0,9.0,10.0,15.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0,100.0
+    double A_list[15]={1.0,2.0,3.0,4.0,5.0,6.0};//5.0,7.0,8.0,9.0,10.0,15.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0,100.0
     int i,j,k,l,m,h,q,con[N][N],Rsize,n_max,n_min,n;
     double a,b,c,pr,def,r;
     a=1.0;
-    b=10.0;Rsize=8;c=0.0;
+    b=4.0;Rsize=6;c=0.0;
     FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
 
@@ -129,26 +129,27 @@ int main(){
                     }
 
                 }
-                data_file2="SISbef.dat";
-                data2=fopen(data_file2,"w");
-                for(l=0;l<T;l++){
-                     fprintf(data2,"%d\t%d\t%d\t%d\n", l, S[l],I[l],O[l]);
-                }
+                //S,Iなどの時間変遷図(before)
+                // data_file2="SISbef.dat";
+                // data2=fopen(data_file2,"w");
+                // for(l=0;l<T;l++){
+                //      fprintf(data2,"%d\t%d\t%d\t%d\n", l, S[l],I[l],O[l]);
+                // }
                 
-                fclose(data2);
-                gp=popen("gnuplot -persist","w");
-                fprintf(gp,"set terminal png\n");
+                // fclose(data2);
+                // gp=popen("gnuplot -persist","w");
+                // fprintf(gp,"set terminal png\n");
                 
-                fprintf(gp,"set output 'SISbef_%.3f.png'\n",c);
+                // fprintf(gp,"set output 'SISbef_%.3f.png'\n",c);
             
 
                 
-                fprintf(gp,"set xrange [0:%d]\n",T);
-                fprintf(gp,"set yrange [0:%d]\n",N*N); //5.0
+                // fprintf(gp,"set xrange [0:%d]\n",T);
+                // fprintf(gp,"set yrange [0:%d]\n",N*N); //5.0
                 
-                fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"P= %f  S \",\'%s\' using 1:3 with lines linetype 2 title \"I \",\'%s\' using 1:4 with lines linetype 3 title \"0\"\n",data_file2,P_list[0],data_file2,data_file2);
+                // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"P= %f  S \",\'%s\' using 1:3 with lines linetype 2 title \"I \",\'%s\' using 1:4 with lines linetype 3 title \"0\"\n",data_file2,P_list[0],data_file2,data_file2);
                 
-                pclose(gp);
+                // pclose(gp);
 
 
 
@@ -162,25 +163,26 @@ int main(){
                 printf("OK\n");
                 y2[h]=infection(con,con_a,con_b,P_list,F_list,c,A_list[h],0,0,x,y1,S,I,O,1);
 
-                data_file3="SISafter.dat";
-                data3=fopen(data_file3,"w");
-                for(l=0;l<T;l++){
-                    fprintf(data3,"%d\t%d\t%d\t%d\n", l, S[l],I[l],O[l]);
-                }
-                fclose(data3);
-                gp=popen("gnuplot -persist","w");
-                fprintf(gp,"set terminal png\n");
+                //S,Iなどの時間変遷図(after)
+                // data_file3="SISafter.dat";
+                // data3=fopen(data_file3,"w");
+                // for(l=0;l<T;l++){
+                //     fprintf(data3,"%d\t%d\t%d\t%d\n", l, S[l],I[l],O[l]);
+                // }
+                // fclose(data3);
+                // gp=popen("gnuplot -persist","w");
+                // fprintf(gp,"set terminal png\n");
                 
-                fprintf(gp,"set output 'SISafter_%.3f.png'\n",r);
+                // fprintf(gp,"set output 'SISafter_%.3f.png'\n",r);
             
 
                 
-                fprintf(gp,"set xrange [0:%d]\n",T);
-                fprintf(gp,"set yrange [0:%d]\n",N*N); //5.0
+                // fprintf(gp,"set xrange [0:%d]\n",T);
+                // fprintf(gp,"set yrange [0:%d]\n",N*N); //5.0
                 
-                fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"P= %f  S \",\'%s\' using 1:3 with lines linetype 3 title \"I \",\'%s\' using 1:4 with lines linetype 4 title \"0\"\n",data_file3,P_list[0],data_file3,data_file3);
+                // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"P= %f  S \",\'%s\' using 1:3 with lines linetype 3 title \"I \",\'%s\' using 1:4 with lines linetype 4 title \"0\"\n",data_file3,P_list[0],data_file3,data_file3);
                 
-                pclose(gp);
+                // pclose(gp);
 
 
 
@@ -229,7 +231,7 @@ int main(){
         }
     }
     //data記載
-    data_file5="SISdot.dat";
+    data_file5="SISlinedot.dat";
     data5=fopen(data_file5,"w");
     for(l=0;l<Rsize;l++){
         fprintf(data5,"%f\t%f\n", A_list[l],y2[l]);
@@ -237,28 +239,29 @@ int main(){
     fclose(data5);
 
     //閾値の線
-    r=1.0;
-    data_file4="SIS.dat";
+    r=0.0;
+    data_file4="SISline.dat";
     data4=fopen(data_file4,"w");
-    for(l=0;l<10000;l++){
-        r=(double)1.0+(double)0.05*l;
-        pr=(z*(z*(1/r)*(1-2*ep)-ep*(z-1)))/(ep*z*(z-1)*(1/r)*(1/r)+(z*z*(1-ep)-z*(1-2*ep))*(1/r)-ep*(z-1)*(z-1));
-        def=r*((z+1)*pow(1/r,2.0)+(-2*(1-ep)+2*z*(1-ep)+pow(z,2.0))*(1/r)+(-4*ep*(z-1)+2*z*(1-ep)-pow(z,2.0)*(1-2*ep))+pow(pow((1/r)+z-2,2.0)*(pow((z+1)*(1/r),2.0)+(4*ep-2*z+2*z*z*(3-2*ep))*(1/r)+(4*ep*ep+4*ep*z*(1-2*ep)+z*z*pow(1-2*ep,2.0))),0.5))/(2*(-(1/r)+(1-ep)*(z-1)*(z-2)));
-        fprintf(data4,"%f\t%f\t%f\n", r,pr,def);
+    for(l=0;l<600;l++){
+        r=(double)0.0+(double)0.01*l;
+        pr=r/(1-1/z);
+        //pr=(z*(z*(1/r)*(1-2*ep)-ep*(z-1)))/(ep*z*(z-1)*(1/r)*(1/r)+(z*z*(1-ep)-z*(1-2*ep))*(1/r)-ep*(z-1)*(z-1));
+        //def=r*((z+1)*pow(1/r,2.0)+(-2*(1-ep)+2*z*(1-ep)+pow(z,2.0))*(1/r)+(-4*ep*(z-1)+2*z*(1-ep)-pow(z,2.0)*(1-2*ep))+pow(pow((1/r)+z-2,2.0)*(pow((z+1)*(1/r),2.0)+(4*ep-2*z+2*z*z*(3-2*ep))*(1/r)+(4*ep*ep+4*ep*z*(1-2*ep)+z*z*pow(1-2*ep,2.0))),0.5))/(2*(-(1/r)+(1-ep)*(z-1)*(z-2)));
+        fprintf(data4,"%f\t%f\n", r,pr);
     }
     fclose(data4);printf("%f\n",r);
     gp=popen("gnuplot -persist","w");
         fprintf(gp,"set terminal png\n");
         //fprintf(gp,"set logscale\n");
         // fprintf(gp,"set output 'Addefunction_f_%2f_P_%2f.png'\n",F_list[0],P_list[0]);
-        fprintf(gp,"set output 'SIS.png'\n");
+        fprintf(gp,"set output 'SISline.png'\n");
 
         
         fprintf(gp,"set xrange [0:%d]\n",1);
         fprintf(gp,"set xlabel 'alpha'\n");
-        fprintf(gp,"set yrange [1:%d]\n",300);//5.0
+        fprintf(gp,"set yrange [1:%d]\n",10);//5.0
         fprintf(gp,"set ylabel 'beta'\n");
-        fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 linecolor rgb 'red'\n",data_file5);
+        fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:2 with points pointtype 1\n",data_file4,data_file5);
         //fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:3 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:2 with points pointtype 1\n",data_file4,data_file4,data_file5);
 
     // for(i=0;i<T;i++){
@@ -587,37 +590,8 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
     }
     
-    data_file1="SIS_beta.dat";
-        // data_file1="outadde_f.dat";
-        data1=fopen(data_file1,"w");
-        for(l=0;l<T;l++){
-            fprintf(data1,"%d\t%f\n",l,y[l]);
-        }
-        fclose(data1);
-        gp=popen("gnuplot -persist","w");
-        fprintf(gp,"set terminal png\n");
-        // fprintf(gp,"set logscale\n");
-        // fprintf(gp,"set output 'Addefunction_f_%2f_P_%2f.png'\n",F_list[0],P_list[0]);
-        fprintf(gp,"set output 'SIS_beta_%2f.png'\n",r);
-
-        
-        fprintf(gp,"set xrange [0:%d]\n",T);
-        fprintf(gp,"set xlabel 'T'\n");
-        fprintf(gp,"set yrange [0:%f]\n",b_max+10.0);//5.0
-        fprintf(gp,"set ylabel 'beta'\n");
-        
-
-        fprintf(gp,"plot \'%s\'using 1:2 with lines linetype 1 linecolor rgb 'red'\n",data_file1);
-        // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"f=%f \"",data_file1,F_list[0]);
-        // for(l=1;l<6;l++){
-        //     fprintf(gp,",\'%s\' using 1:%d with lines linetype %d title \"f=%f \"",data_file1,l+2,l+1,F_list[l]);
-        // }
-        // fprintf(gp,",\'%s\' using 1:%d with lines linetype %d title \"f=%f \"\n",data_file1,9,8,F_list[6]);
-        
-        
-        
-        pclose(gp);
-
+    //SIS_betaの図
+    
 
 
 
