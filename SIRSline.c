@@ -18,22 +18,24 @@
 #define T  500
 #define T_f 2000
 #define z 4.0
+#define w 10.0
 #define Q 1    //平均を取るための試行回数
+//回復率
 
-double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double c,double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g);
+double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double c,double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int R[],int O[],int g);
 
 
 int main(){
     double con_a[N][N],P_list[2]={0.0},con_b[N][N],F_list[7]={0.5};//{0.1,0.5,1.0,2.0,3.0,10.0,100.0}
-    double A_list[15]={1.0,2.0,3.0,4.0,5.0,6.0};//5.0,7.0,8.0,9.0,10.0,15.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0,100.0
+    double G_list[15]={5.0,10.0,40.0};//5.0,7.0,8.0,9.0,10.0,15.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0,100.0
     int i,j,k,l,m,h,q,con[N][N],Rsize,n_max,n_min,n;
     double a,b,c,pr,def,r;
     a=1.0;
-    b=4.0;Rsize=6;c=0.0;
+    b=10.0;Rsize=3;c=0.0;
     FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
 
-    int x[T],t[15000],I[15000],S[15000],E[15000],O[15000];
+    int x[T],t[15000],I[15000],S[15000],E[15000],O[15000],R[15000];
     double y1[T],y2[T],y3[T],y4[T],y5[T],y6[T],y7[T],y8[T],y9[T],y10[T],y11[T];
 
     srand((unsigned int)time(NULL));
@@ -44,8 +46,8 @@ int main(){
         for(h=0;h<Rsize;h++){ 
             for(i=0;i<1;i++){
                 //c=0.05+i*0.05;
-                printf("r=%f\n",A_list[h]);
-                a=A_list[h];
+                printf("r=%f\n",G_list[h]);
+                //a=A_list[h];
                 /*conの初期化(part1)*/
                 for(j=0;j<N;j++){
                     for(k=0;k<N;k++){
@@ -57,18 +59,27 @@ int main(){
                 /*conの初期化(part2)*/
                 for(j=0;j<N;j++){
                     for(k=0;k<N;k++){
-                        n_max=2,n_min=1;
+                        n_max=3,n_min=1;
                         n =(int)rand()%(n_max-n_min+1)+n_min;
-                        if(n==1){
-                            con[j][k]=1;
+                        if(n==0){
+                            con[j][k]=0;
                             con_a[j][k]=0;
                             con_b[j][k]=0;
                         }
-                        else{
+                        else if(n==1){
+                            con[j][k]=1;
+                            con_a[j][k]=0;
+                            con_b[j][k]=0;
+
+                        }else if(n==2){
                             con[j][k]=2;
                             con_a[j][k]=a;
                             con_b[j][k]=b;
 
+                        }else{
+                            con[j][k]=3;
+                            con_a[j][k]=0;
+                            con_b[j][k]=0;
                         }
                     }
                 }
@@ -83,7 +94,7 @@ int main(){
                 //     }
                 // }
 
-            def=infection(con,con_a,con_b,P_list,F_list,c,A_list[h],0,0,x,y1,S,I,O,0);
+            def=infection(con,con_a,con_b,P_list,F_list,c,G_list[h],0,0,x,y1,S,I,R,O,0);
                
             printf("でたよー");    
                 /*変異株導入*/
@@ -112,8 +123,8 @@ int main(){
                     }
                 }
                 
-                int ns,ni,ne,no;
-                ns=0,ni=0,ne=0;
+                int ns,ni,ne,no,nr;
+                ns=0,ni=0,ne=0,nr=0;
                 for(l=0;l<N;l++){
                     for(m=0;m<N;m++){
                         if(con[l][m]==2){
@@ -122,32 +133,35 @@ int main(){
                         else if(con[l][m]==1){
                             ns=ns+1;
                         }
-                        else{
+                        else if(con[l][m]==0){
                             no=no+1;
+                        }
+                        else{
+                            nr=nr+1;
                         }
                         
                     }
 
                 }
-                //S,Iなどの時間変遷図(before)
-                // data_file2="SISbef.dat";
+                //S,Iなどの変遷(before)
+                // data_file2="SIRSbef.dat";
                 // data2=fopen(data_file2,"w");
                 // for(l=0;l<T;l++){
-                //      fprintf(data2,"%d\t%d\t%d\t%d\n", l, S[l],I[l],O[l]);
+                //      fprintf(data2,"%d\t%d\t%d\t%d\t%d\n", l, S[l],I[l],R[l],O[l]);
                 // }
                 
                 // fclose(data2);
                 // gp=popen("gnuplot -persist","w");
                 // fprintf(gp,"set terminal png\n");
                 
-                // fprintf(gp,"set output 'SISbef_%.3f.png'\n",c);
+                // fprintf(gp,"set output 'SIRSbef_%.3f.png'\n",c);
             
 
                 
                 // fprintf(gp,"set xrange [0:%d]\n",T);
                 // fprintf(gp,"set yrange [0:%d]\n",N*N); //5.0
                 
-                // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"P= %f  S \",\'%s\' using 1:3 with lines linetype 2 title \"I \",\'%s\' using 1:4 with lines linetype 3 title \"0\"\n",data_file2,P_list[0],data_file2,data_file2);
+                // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"P= %f  S \",\'%s\' using 1:3 with lines linetype 2 title \"I \",\'%s\' using 1:4 with lines linetype 2 title \"R \",\'%s\' using 1:5 with lines linetype 4 title \"0\"\n",data_file2,P_list[0],data_file2,data_file2,data_file2);
                 
                 // pclose(gp);
 
@@ -161,26 +175,26 @@ int main(){
 
                 /*メインの平衡状態を作る*/
                 printf("OK\n");
-                y2[h]=infection(con,con_a,con_b,P_list,F_list,c,A_list[h],0,0,x,y1,S,I,O,1);
+                y2[h]=infection(con,con_a,con_b,P_list,F_list,c,G_list[h],0,0,x,y1,S,I,R,O,1);
 
-                //S,Iなどの時間変遷図(after)
-                // data_file3="SISafter.dat";
+                //S,Iなどの変遷(after)
+                // data_file3="SIRSafter.dat";
                 // data3=fopen(data_file3,"w");
                 // for(l=0;l<T;l++){
-                //     fprintf(data3,"%d\t%d\t%d\t%d\n", l, S[l],I[l],O[l]);
+                //     fprintf(data3,"%d\t%d\t%d\t%d\t%d\n", l, S[l],I[l],R[l],O[l]);
                 // }
                 // fclose(data3);
                 // gp=popen("gnuplot -persist","w");
                 // fprintf(gp,"set terminal png\n");
                 
-                // fprintf(gp,"set output 'SISafter_%.3f.png'\n",r);
+                // fprintf(gp,"set output 'SIRSafter_%.3f.png'\n",r);
             
 
                 
                 // fprintf(gp,"set xrange [0:%d]\n",T);
                 // fprintf(gp,"set yrange [0:%d]\n",N*N); //5.0
                 
-                // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"P= %f  S \",\'%s\' using 1:3 with lines linetype 3 title \"I \",\'%s\' using 1:4 with lines linetype 4 title \"0\"\n",data_file3,P_list[0],data_file3,data_file3);
+                // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"P= %f  S \",\'%s\' using 1:3 with lines linetype 3 title \"I \",\'%s\' using 1:4 with lines linetype 4 title \"R \",\'%s\' using 1:5 with lines linetype 5 title \"0\"\n",data_file3,P_list[0],data_file3,data_file3,data_file3);
                 
                 // pclose(gp);
 
@@ -231,21 +245,20 @@ int main(){
         }
     }
     //data記載
-    data_file5="SISlinedot.dat";
+    data_file5="SIRSlineDot.dat";
     data5=fopen(data_file5,"w");
     for(l=0;l<Rsize;l++){
-        fprintf(data5,"%f\t%f\n", A_list[l],y2[l]);
+        fprintf(data5,"%f\t%f\n", G_list[l],y2[l]);
     }
     fclose(data5);
 
     //閾値の線
-    r=0.0;
-    data_file4="SISline.dat";
+    r=1.0;
+    data_file4="SIRSline.dat";
     data4=fopen(data_file4,"w");
-    for(l=0;l<600;l++){
-        r=(double)0.0+(double)0.01*l;
-        pr=r/(1-1/z);
-        //pr=(z*(z*(1/r)*(1-2*ep)-ep*(z-1)))/(ep*z*(z-1)*(1/r)*(1/r)+(z*z*(1-ep)-z*(1-2*ep))*(1/r)-ep*(z-1)*(z-1));
+    for(l=0;l<(int)G_list[Rsize];l++){
+        r=(double)0.0+(double)l;
+        pr=r*(w+r)/(w-r/z);
         //def=r*((z+1)*pow(1/r,2.0)+(-2*(1-ep)+2*z*(1-ep)+pow(z,2.0))*(1/r)+(-4*ep*(z-1)+2*z*(1-ep)-pow(z,2.0)*(1-2*ep))+pow(pow((1/r)+z-2,2.0)*(pow((z+1)*(1/r),2.0)+(4*ep-2*z+2*z*z*(3-2*ep))*(1/r)+(4*ep*ep+4*ep*z*(1-2*ep)+z*z*pow(1-2*ep,2.0))),0.5))/(2*(-(1/r)+(1-ep)*(z-1)*(z-2)));
         fprintf(data4,"%f\t%f\n", r,pr);
     }
@@ -254,15 +267,14 @@ int main(){
         fprintf(gp,"set terminal png\n");
         //fprintf(gp,"set logscale\n");
         // fprintf(gp,"set output 'Addefunction_f_%2f_P_%2f.png'\n",F_list[0],P_list[0]);
-        fprintf(gp,"set output 'SISline.png'\n");
+        fprintf(gp,"set output 'SIRSline.png'\n");
 
         
-        fprintf(gp,"set xrange [0:%d]\n",1);
-        fprintf(gp,"set xlabel 'alpha'\n");
+        fprintf(gp,"set xrange [0:%d]\n",(int)G_list[Rsize]);
+        fprintf(gp,"set xlabel 'gamma'\n");
         fprintf(gp,"set yrange [0:%d]\n",100);//5.0
         fprintf(gp,"set ylabel 'beta'\n");
         fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:2 with points pointtype 1\n",data_file4,data_file5);
-        //fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:3 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:2 with points pointtype 1\n",data_file4,data_file4,data_file5);
 
     // for(i=0;i<T;i++){
     //     y1[i]=y1[i]/Q;y2[i]=y2[i]/Q;y3[i]=y3[i]/Q;y4[i]=y4[i]/Q;y5[i]=y5[i]/Q;y6[i]=y6[i]/Q;y7[i]=y7[i]/Q;
@@ -311,10 +323,10 @@ int main(){
 
 
 // void infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],int P_size,int f_size,int x[],double y[],int S[],int E[],int I[],int O[],int a);
-double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double c,double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int O[],int g){
+double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[],double F_list[],double c,double r,int P_size,int f_size,int x[],double y[],int S[],int I[],int R[],int O[],int g){
     int i,j,k,m,l,MM;
-    double v_mu,pr,a;
-    //a=1.0;
+    double v_mu,pr,a,gamma;
+    a=1.0;
     FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
     srand((unsigned int)time(NULL));
@@ -323,8 +335,8 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
     for(j=0;j<T;j++){ //M
         double vir;
         int ni,ne;
-        int ss,ee,ii,oo;
-        a=r;
+        int ss,ee,ii,oo,rr;
+        gamma=r;
         for(k=0;k<MM*N*N;k++){
             int x,y,n;
             x=(int)rand()%N,y=(int)rand()%N;
@@ -498,8 +510,8 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                         }
                     }
                 }
-                else if(pr < con_b[x][y]*dt+con_a[x][y]*dt){
-                    con[x][y]=1;
+                else if(pr < con_b[x][y]*dt+gamma*dt){
+                    con[x][y]=3;
                     con_a[x][y]=0;
                     con_b[x][y]=0;
                 }
@@ -530,6 +542,12 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                             
                             
                             
+            }else if(con[x][y]==3){
+                pr=(double)rand()/RAND_MAX;
+                if(pr<w*dt){
+                    con[x][y]=1;
+                    
+                }
             }
 
                         
@@ -537,7 +555,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
 
         }
-        ss=0,ii=0,ee=0,oo=0;
+        ss=0,ii=0,ee=0,oo=0,rr=0;
         for(l=0;l<N;l++){
             for(m=0;m<N;m++){
                 if(con[l][m]==2){
@@ -548,13 +566,15 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                 }
                 else if(con[l][m]==0){
                     oo=oo+1;
+                }else{
+                    rr=rr+1;
                 }
                 
 
             }
 
         }
-        S[j]=ss;I[j]=ii;O[j]=oo;
+        S[j]=ss;I[j]=ii;O[j]=oo;R[j]=rr;
                     
 
 
@@ -589,9 +609,38 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
                 
 
     }
-    
-    //SIS_betaの図
-    
+    //SIRSの毒性遷移図
+    // data_file1="SIRS_beta.dat";
+    //     // data_file1="outadde_f.dat";
+    //     data1=fopen(data_file1,"w");
+    //     for(l=0;l<T;l++){
+    //         fprintf(data1,"%d\t%f\n",l,y[l]);
+    //     }
+    //     fclose(data1);
+    //     gp=popen("gnuplot -persist","w");
+    //     fprintf(gp,"set terminal png\n");
+    //     // fprintf(gp,"set logscale\n");
+    //     // fprintf(gp,"set output 'Addefunction_f_%2f_P_%2f.png'\n",F_list[0],P_list[0]);
+    //     fprintf(gp,"set output 'SIRS_beta_%2f.png'\n",r);
+
+        
+    //     fprintf(gp,"set xrange [0:%d]\n",T);
+    //     fprintf(gp,"set xlabel 'T'\n");
+    //     fprintf(gp,"set yrange [0:%f]\n",b_max+10.0);//5.0
+    //     fprintf(gp,"set ylabel 'beta'\n");
+        
+
+    //     fprintf(gp,"plot \'%s\'using 1:2 with lines linetype 1 linecolor rgb 'red'\n",data_file1);
+    //     // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"f=%f \"",data_file1,F_list[0]);
+    //     // for(l=1;l<6;l++){
+    //     //     fprintf(gp,",\'%s\' using 1:%d with lines linetype %d title \"f=%f \"",data_file1,l+2,l+1,F_list[l]);
+    //     // }
+    //     // fprintf(gp,",\'%s\' using 1:%d with lines linetype %d title \"f=%f \"\n",data_file1,9,8,F_list[6]);
+        
+        
+        
+    //     pclose(gp);
+
 
 
 
