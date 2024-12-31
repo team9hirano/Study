@@ -14,7 +14,7 @@
 #define v_muu 2.0//2.0
 #define d 1.0
 #define dt 1.0/(b_max+d+1.0)
-#define M  (int)b_max+d+800 //b_max+1000
+#define M  (int)b_max+d+1600 //b_max+1000
 #define T  500
 #define T_f 2000
 #define z 4.0
@@ -183,7 +183,7 @@ int main(){
                 gp=popen("gnuplot -persist","w");
                 fprintf(gp,"set terminal png\n");
                 
-                fprintf(gp,"set output 'SIRafter_%.3f.png'\n",r);
+                fprintf(gp,"set output 'SIRafter_%.3f.png'\n",R_list[h]);
             
 
                 
@@ -241,7 +241,7 @@ int main(){
         }
     }
     //data記載
-    data_file5="SIRDot.dat";
+    data_file5="SIRDot2.dat";
     data5=fopen(data_file5,"w");
     for(l=0;l<Rsize;l++){
         fprintf(data5,"%f\t%f\n", R_list[l],y2[l]);
@@ -254,8 +254,10 @@ int main(){
     data4=fopen(data_file4,"w");
     for(l=0;l<10000;l++){
         r=(double)1.0+(double)0.05*l;
-        pr=(z*(z*(1/r)*(1-2*ep)-ep*(z-1)))/(ep*z*(z-1)*(1/r)*(1/r)+(z*z*(1-ep)-z*(1-2*ep))*(1/r)-ep*(z-1)*(z-1));
-        def=r*((z+1)*pow(1/r,2.0)+(-2*(1-ep)+2*z*(1-ep)+pow(z,2.0))*(1/r)+(-4*ep*(z-1)+2*z*(1-ep)-pow(z,2.0)*(1-2*ep))+pow(pow((1/r)+z-2,2.0)*(pow((z+1)*(1/r),2.0)+(4*ep-2*z+2*z*z*(3-2*ep))*(1/r)+(4*ep*ep+4*ep*z*(1-2*ep)+z*z*pow(1-2*ep,2.0))),0.5))/(2*(-(1/r)+(1-ep)*(z-1)*(z-2)));
+        pr=-((a+d+gamma)*r*(pow(a*z,2.0)+(2*d+gamma)*z*(r*(z-1)+(d+gamma)*z)+a*(r*(z-1)+z*(-d+4*d*z+2*gamma*z))))/(pow(a,2.0)*(-r*(-2+z)+d*(-1+z))*z+pow(d,2.0)*(2*r+3*gamma*(z-1))*z+2*pow(d,3.0)*(z-1)*z-gamma*r*(z-2)*(r*(-1+z)+gamma*z)+d*(-2*pow(r*(z-1),2.0)-2*gamma*r*(z-2)*z+pow(gamma,2.0)*(z-1)*z)-a*(pow(r*(z-1),2.0)-d*(3*d+2*gamma)*(-1+z)*z+r*z*(2*gamma*(z-2)+d*(-5+2*z))));
+        //(z*(z*(1/r)*(1-2*ep)-ep*(z-1)))/(ep*z*(z-1)*(1/r)*(1/r)+(z*z*(1-ep)-z*(1-2*ep))*(1/r)-ep*(z-1)*(z-1));
+        def=2*pow(a*z,2.0)*r/(d*(2*r-2*a*z+4*d*z-3*r*z-2*d*pow(z,2.0)+r*pow(z,2.0)));
+        //r*((z+1)*pow(1/r,2.0)+(-2*(1-ep)+2*z*(1-ep)+pow(z,2.0))*(1/r)+(-4*ep*(z-1)+2*z*(1-ep)-pow(z,2.0)*(1-2*ep))+pow(pow((1/r)+z-2,2.0)*(pow((z+1)*(1/r),2.0)+(4*ep-2*z+2*z*z*(3-2*ep))*(1/r)+(4*ep*ep+4*ep*z*(1-2*ep)+z*z*pow(1-2*ep,2.0))),0.5))/(2*(-(1/r)+(1-ep)*(z-1)*(z-2)));
         fprintf(data4,"%f\t%f\t%f\n", r,pr,def);
     }
     fclose(data4);printf("%f\n",r);
@@ -596,7 +598,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
         }
                     
                     
-        vir=(double)vir/ni;
+        vir=vir/(double)ni;
     x[j]=j;//printf("%d\n",ni);
     y[j]=vir;
 
