@@ -3,7 +3,7 @@
 #include <time.h>
 #include <math.h>
 
-//未完成
+
 #define N 200//200
 #define a_max 4.767 // 4.767
 #define a_min 0.2
@@ -24,215 +24,315 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
 
 int main(){
-    double con_a[N][N],P_list[2]={0.0},con_b[N][N],F_list[7]={0.5};//{0.1,0.5,1.0,2.0,3.0,10.0,100.0}
-    double A_list[T]={1.0,2.0,3.0,4.0,5.0,6.0,10.0,20.0,30.0,50.0,80.0,100.0},B_list[T];//5.0,7.0,8.0,9.0,10.0,15.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0,100.0
-    int i,j,k,l,m,h,q,con[N][N],Rsize,n_max,n_min,n;
-    double a,b,c,pr,def,r;
-    a=1.0;
-    b=4.0;Rsize=12;c=0.0;
+    double J[N][N];//{0.1,0.5,1.0,2.0,3.0,10.0,100.0}
+    double F[6],r[6]={0.0,0.0,0.0,0.0,0.0,0.0},A_list[T],B_list[T],R_list[T],D_list[T],A2_list[T],B2_list[T];//5.0,7.0,8.0,9.0,10.0,15.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0,100.0
+    int i,j,k,l,m,h,q,con[N][N],Rsize,n_max,n_min,n,number,count,count_max;
+    double x,y,s,A,B,C,f,G,H,I,beta,alpha,gamma,omega,m1,m2,m3,R,rhos,befx,befy,befs,befA,befB,befC,befrhos;
+    
     FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
 
-    int x[T],t[15000],I[15000],S[15000],E[15000],O[15000];
-    double y1[T],y2[T],y3[T],y4[T],y5[T],y6[T],y7[T],y8[T],y9[T],y10[T],y11[T];
+    // int x[T],t[15000],I[15000],S[15000],E[15000],O[15000];
+    // double y1[T],y2[T],y3[T],y4[T],y5[T],y6[T],y7[T],y8[T],y9[T],y10[T],y11[T];
 
     srand((unsigned int)time(NULL));
-
-
-
-    
-        for(h=0;h<T;h++){ 
-            A_list[h]=(double)h;
-            a=A_list[h];
-            for(i=0;i<T;i++){
-                //c=0.05+i*0.05;
-                b=(double)i;
-                
-                /*conの初期化(part1)*/
-                for(j=0;j<N;j++){
-                    for(k=0;k<N;k++){
-                        con[j][k]=0;
-                        con_a[j][k]=0;
-                        con_b[j][k]=0;
+    //絶滅境界線
+    count=0;
+    count_max=10;
+    for(m=1;m<T;m++){
+        count=0;
+        if(m<=10){
+            R=(double)m/10+1.0;
+       }else{
+            R=(double)m-8.0;
+       }
+        // printf("alpha=%f\n",alpha);
+        A_list[m]=R;
+        B_list[m]=(double)b_max;
+        
+        for(h=(int)b_max;h>0;h--){
+            beta=(double)h;
+            if(count > count_max)break;
+            x=0.25;
+            y=0.25;
+            s=0.75;
+            A=0.25;
+            B=0.25;
+            C=0.55;
+            //R=5.0;
+            //beta=100.0;
+            befx=x;befy=y;befs=s;befA=A;befB=B;befC=C;
+            alpha=1.0;
+            gamma=1.0;
+            omega=10.0;
+        
+            for(l=0;l<100000;l++){
+                J[0][0]=beta*(1-1/z)*(C-A-B)-d-beta*(1/z+(1-1/z)*A)-2*beta*x;
+                J[0][1]=-2*beta*(1-1/z)*x;
+                J[0][2]=-beta*(1-1/z)*x;
+                J[0][3]=beta*(1-1/z)*x;
+                J[0][4]=0;
+                J[0][5]=0;
+                J[1][0]=0;
+                J[1][1]=beta*(1-1/z)*(C-2*A-B)-(d+alpha+gamma)-beta*(1/z+(1-1/z)*2*A)-gamma*B+2*beta*A;
+                J[1][2]=-beta*(1-1/z)*A-gamma*A;
+                J[1][3]=beta*(1-1/z)*A;
+                J[1][4]=0;
+                J[1][5]=0;
+                J[2][0]=0;
+                J[2][1]=alpha+beta*B/z;
+                J[2][2]=R*(1-1/z)-d+beta*A/z-R/z-2*gamma*B;
+                J[2][3]=0;
+                J[2][4]=0;
+                J[2][5]=0;
+                J[3][0]=0;
+                J[3][1]=-gamma-beta*(1-C)/z;
+                J[3][2]=(1-C)*R;
+                J[3][3]=-(d+R*B-beta*A+beta*(1-1/z)*A);
+                J[3][4]=0;
+                J[3][5]=0;
+                J[4][0]=beta*(1-1/z)*B+d-(d+alpha)-beta*y;
+                J[4][1]=0;
+                J[4][2]=beta*(1-1/z)*x;
+                J[4][3]=0;
+                J[4][4]=-(d+alpha)-beta*x;
+                J[4][5]=alpha;
+                J[5][0]=-beta*(1-1/z)*(1-C)+gamma+beta*(1-s);
+                J[5][1]=0;
+                J[5][2]=0;
+                J[5][3]=beta*(1-1/z)*x;
+                J[5][4]=gamma;
+                J[5][5]=-gamma-(d+beta*x);
+                F[0]=-(beta*(1-1/z)*(C-A-B)*x-d*x-beta*(1/z+(1-1/z)*A)*x-beta*x*x);
+                F[1]=-(beta*(1-1/z)*A*(C-A-B)-(d+alpha+gamma)*A-beta*(1/z+(1-1/z)*A)*A-gamma*A*B+beta*A*A);
+                F[2]=-(R*(1-1/z)*B-d*B+alpha*A+d+beta*A*B/z-R*B/z-gamma*B*B);
+                F[3]=-(-gamma*A+(1-C)*(d+R*B-beta*A+beta*(1-1/z)*A));
+                F[4]=-(beta*(1-1/z)*x*B+d*x+(d+alpha)*(s-x-y)+d*(1-s)-beta*x*y);
+                F[5]=-(-beta*(1-1/z)*x*(1-C)-gamma*(s-x-y)+(1-s)*(d+beta*x));
+                if(h==b_max&&m==1&&l==0){
+                    printf("J11=%f,J12=%f,J13=%f,J14=%f,J15=%f,J16=%f\n",J[0][0],J[0][1],J[0][2],J[0][3],J[0][4],J[0][5]);
+                    printf("J21=%f,J22=%f,J23=%f,J24=%f,J25=%f,J26=%f\n",J[1][0],J[1][1],J[1][2],J[1][3],J[1][4],J[1][5]);
+                    printf("J31=%f,J32=%f,J33=%f,J34=%f,J35=%f,J36=%f\n",J[2][0],J[2][1],J[2][2],J[2][3],J[2][4],J[2][5]);
+                    printf("J41=%f,J42=%f,J43=%f,J44=%f,J45=%f,J46=%f\n",J[3][0],J[3][1],J[3][2],J[3][3],J[3][4],J[3][5]);
+                    printf("J51=%f,J52=%f,J53=%f,J54=%f,J55=%f,J56=%f\n",J[4][0],J[4][1],J[4][2],J[4][3],J[4][4],J[4][5]);
+                    printf("J61=%f,J62=%f,J63=%f,J64=%f,J65=%f,J66=%f\n",J[5][0],J[5][1],J[5][2],J[5][3],J[5][4],J[5][5]);
+                    printf("F0=%f,F1=%f,F2=%f,F3=%f,F4=%f,F5=%f\n",F[0],F[1],F[2],F[3],F[4],F[5]);
+                }
+                //ガウスの消去法
+                number=6;
+                for(i=0;i<number;i++){
+                    for(j=i+1;j<number;j++){
+                    m1=J[j][i]/J[i][i];
+                    for(k=i+1;k<number;k++){
+                        J[j][k]=J[j][k]-m1*J[i][k];
+                        
+                    } 
+                    F[j]=F[j]-m1*F[i];
                     }
                 }
-                /*conの初期化(part2)*/
-                for(j=0;j<N;j++){
-                    for(k=0;k<N;k++){
-                        n_max=2,n_min=1;
-                        n =(int)rand()%(n_max-n_min+1)+n_min;
-                        if(n==1){
-                            con[j][k]=1;
-                            con_a[j][k]=0;
-                            con_b[j][k]=0;
-                        }
-                        else{
-                            con[j][k]=2;
-                            con_a[j][k]=a;
-                            con_b[j][k]=b;
-
+                for(i=number-1;i>=0;i--){
+                    m2=0.0;
+                    if(i==number-1){
+                        m2=0.0;
+                    }
+                    else{
+                        for(j=i+1;j<number;j++){
+                            m2=m2+J[i][j]*r[j];
                         }
                     }
+                    
+                    r[i]=(1/J[i][i])*(F[i]-m2);
                 }
-                // for(j=0;j<N;j++){
-                //     for(k=0;k<N;k++){
-                //        if((double)rand()/RAND_MAX < 1.0/100){
-                //             con[j][k]=2;
-                //             con_a[j][k]=a;
-                //             con_b[j][k]=b;
-                //             // printf("侵入完了");
-                //        } 
-                //     }
-                // }
 
-            def=infection(con,con_a,con_b,P_list,F_list,c,A_list[h],0,0,x,y1,S,I,O,0);
-            if(def==0){
-                continue;
-            }else{
-            B_list[i]=def;
-            break;
-            }  
-            printf("でたよー");    
+                if(fabs(r[0])<0.001&&fabs(r[1])<0.001&&fabs(r[2])<0.001&&fabs(r[3])<0.001&&fabs(r[4])<0.001&&fabs(r[5])<0.001){
+                    
+                    if(R*B-d<0&&beta*x-(d+alpha+gamma)<0){   //r*B-d,beta*x-(d+alpha+gamma) or R*B-beta*A-d
                 
-
+                        B_list[m]=beta;
+                        
+                        
                 
-                 data_file3="SISafter.dat";
-                 data3=fopen(data_file3,"w");
-                 for(l=0;l<T;l++){
-                     fprintf(data3,"%f\t%fn", A_list[l],B_list[l]);
-                 }
-                 fclose(data3);
-                 gp=popen("gnuplot -persist","w");
-                 fprintf(gp,"set terminal png\n");
-                
-                 fprintf(gp,"set output 'SISdiseasefree.png'\n");
-            
-
-                
-                 fprintf(gp,"set xrange [0:%d]\n",T);
-                 fprintf(gp,"set xlabel 'alpha'\n");
-                 fprintf(gp,"set yrange [0:%d]\n",N*N); //5.0
-                fprintf(gp,"set ylabel 'beta'\n");
-                 fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"a= %f  S \",\'%s\' using 1:3 with lines linetype 3 title \"I \",\'%s\' using 1:4 with lines linetype 4 title \"0\"\n",data_file3,A_list[h],data_file3,data_file3);
-                
-                 pclose(gp);
-
-
-
-                //ヒートマップ
-            // data_file4="Map_I.dat";data_file5="Map_E.dat";data_file6="Map_S.dat";
-            // data4=fopen(data_file4,"w");data5=fopen(data_file5,"w");data6=fopen(data_file6,"w");
-            // for(l=0;l<N;l++){
-            //     for(m=0;m<N;m++){
-            //         if(con[l][m]==3){
-            //             fprintf(data4,"%d\t%d\n",l,m);
-            //         }
-            //         else if(con[l][m]==2){
-            //             fprintf(data5,"%d\t%d\n",l,m);
-            //         }
-            //         else if(con[l][m]==1){
-            //             fprintf(data6,"%d\t%d\n",l,m);
-            //         }
-            //     }
-
-               
-            // }
-                
-            // fclose(data4);fclose(data5);fclose(data6);
-            // gp=popen("gnuplot -persist","w");
-            // fprintf(gp,"set terminal png\n");
-                
-            // fprintf(gp,"set output 'Map_%.1f_%3f.png'\n",P_list[i],F_list[h]);
-            
-
-                
-            // fprintf(gp,"set xrange [0:%d]\n",N);
-            // fprintf(gp,"set yrange [0:%d]\n",N); //5.0
-            // fprintf(gp,"plot \'%s\' with points ps 0.4 pointtype 5 linecolor rgb 'red',\'%s\' with points ps 0.4 pointtype 5 linecolor rgb 'yellow',\'%s\' with points ps 0.4 pointtype 5 linecolor rgb 'blue'\n",data_file4,data_file5,data_file6);    
-            
-            // pclose(gp);
-
+                    }else{
+                        count=count+1;
+                    }
+                    //printf("でたよ");
+                    break;
+                    
+                }
+                befx=x;befy=y;befs=s;befA=A;befB=B;befC=C;
+                    x=x+r[0];
+                    A=A+r[1];
+                    B=B+r[2];
+                    C=C+r[3];
+                    y=y+r[4];
+                    s=s+r[5];
                 
 
             }
-
-
         
+        }
+     
+        printf("r=%f,x=%f,A=%f,B=%f,C=%f,y=%f,s=%f\n",R,x,A,B,C,y,s);
+    }
 
+    //diseasefree境界線
+    count=0;
+    count_max=10;
+    for(m=1;m<T;m++){
+       count=0;
+       if(m<=10){
+            R=(double)m/10+1.0;
+       }else{
+            R=(double)m-8.0;
+       }
+        //R=(double)m;
+        // printf("alpha=%f\n",alpha);
+        A2_list[m]=R;
+        B2_list[m]=0.0;
+        for(h=1;h<=(int)b_max;h++){
+            beta=(double)h;
+            if(count > count_max)break;
+            x=0.3;
+            y=0.3;
+            s=0.75;
+            A=0.0;
+            B=0.5;
+            C=1.0;
+            
+            rhos=0.5;
+            //beta=100.0;
+            gamma=1.0;
+            alpha=1.0;
+            omega=10.0;
+        
+            for(l=0;l<100000;l++){
+                J[0][0]=beta*(1-1/z)*(C-A-B)-d-beta*(1/z+(1-1/z)*A)-2*beta*x;
+                J[0][1]=R*(1-1/z)*(rhos/(1-rhos))*B;
+                J[0][2]=0;
+                J[0][3]=R*(1-1/z)*(rhos/(1-rhos))*y-beta*(1-1/z)*x;
+                J[0][4]=beta*(1-1/z)*x;
+                J[0][5]=R*(1-1/z)*B*y*pow((1-rhos),-2.0);
+                J[1][0]=beta*(1-1/z)*B+d-(d+alpha)-beta*y;
+                J[1][1]=-(d+alpha)-R*(1-1/z)*(rhos/(1-rhos))*B-beta*x;
+                J[1][2]=alpha;
+                J[1][3]=beta*(1-1/z)*x-R*(1-1/z)*(rhos/(1-rhos))*y;
+                J[1][4]=0;
+                J[1][5]=R*B*(1-1/z)*y*pow(1-rhos,-2);
+                J[2][0]=-beta*(1-1/z)*(1-C)+gamma+beta*(1-s);
+                J[2][1]=gamma;
+                J[2][2]=-gamma-beta*x-d;
+                J[2][3]=0;
+                J[2][4]=beta*(1-1/z)*x;
+                J[2][5]=0;
+                J[3][0]=0;
+                J[3][1]=0;
+                J[3][2]=0;
+                J[3][3]=R*(1-1/z)*(1-2*B*(rhos/(1-rhos)))-d-R*(1/z+2*B*(1-1/z)*(rhos/(1-rhos)))-2*gamma*B;
+                J[3][4]=0;
+                J[3][5]=-2*R*(1-1/z)*pow(1-rhos,-2);
+                J[4][0]=0;
+                J[4][1]=0;
+                J[4][2]=0;
+                J[4][3]=R*(1-C);
+                J[4][4]=-(d+R*B);
+                J[4][5]=0;
+                J[5][0]=0;
+                J[5][1]=0;
+                J[5][2]=0;
+                J[5][3]=R*rhos;
+                J[5][4]=0;
+                J[5][5]=R*B-d;
+                F[0]=-(R*(1-1/z)*(rhos/(1-rhos))*B*y+beta*(1-1/z)*(C-A-B)*x-d*x-beta*(1/z+(1-1/z)*A)*x-beta*x*x);
+                F[1]=-(beta*(1-1/z)*x*B+d*x+(d+alpha)*(s-x-y)+d*(1-s)-R*(1-1/z)*y*(rhos/(1-rhos))*B-beta*x*y);
+                F[2]=-(-beta*(1-1/z)*x*(1-C)-gamma*(s-x-y)+(1-s)*(d+beta*x));
+                F[3]=-(R*(1-1/z)*(1-(rhos/(1-rhos))*B)*B-d*B+alpha*A+d+beta*A*B/z-R*B*(1/z+(1-1/z)*(rhos/(1-rhos))*B)-gamma*B*B);//R*(1-1/z)*(1-(rhos/(1-rhos))*B)*B-d*B+alpha*A+d+beta*A*B/z-R*B*(1/z+(1-1/z)*(rhos/(1-rhos))*B)-gamma*B*B
+                F[4]=-(-gamma*A+(1-C)*(d+R*B-beta*A+beta*(1-1/z)*A));//-gamma*A+(1-C)*(d+R*B-beta*A+beta*(1-1/z)*A);
+                F[5]=-(rhos*(R*B-d));
+                //ガウスの消去法
+                number=6;
+                for(i=0;i<number;i++){
+                    for(j=i+1;j<number;j++){
+                    m1=J[j][i]/J[i][i];
+                    for(k=i+1;k<number;k++){
+                        J[j][k]=J[j][k]-m1*J[i][k];
+                        
+                    } 
+                    F[j]=F[j]-m1*F[i];
+                    }
+                }
+                for(i=number-1;i>=0;i--){
+                    m2=0.0;
+                    if(i==number-1){
+                        m2=0.0;
+                    }
+                    else{
+                        for(j=i+1;j<number;j++){
+                            m2=m2+J[i][j]*r[j];
+                        }
+                    }
+                    
+                    r[i]=(1/J[i][i])*(F[i]-m2);
+                }
 
+                if(fabs(r[0])<0.001&&fabs(r[1])<0.001&&fabs(r[2])<0.001&&fabs(r[3])<0.001&&fabs(r[4])<0.001&&fabs(r[5])<0.001){
+                    
+                    if(R*B-d<0&&beta*x-(d+alpha+gamma)<0){   //r*B-d,beta*x-(d+alpha+gamma)
+                
+
+                        B2_list[m]=beta;
+                        
+                        
+                
+                    }else{
+                        count=count+1;
+                    }
+                    break;
+                    
+                }
+                
+                    x=x+r[0];
+                    //A=A-r[1];
+                    B=B+r[3];
+                    C=C+r[4];
+                    rhos=rhos+r[5];
+                    y=y+r[1];
+                    s=s+r[2];
+                
+
+            }
         
         }
     
-    //data記載
-    data_file5="SISlinedot.dat";
-    data5=fopen(data_file5,"w");
-    for(l=0;l<Rsize;l++){
-        fprintf(data5,"%f\t%f\n", A_list[l],y2[l]);
     }
-    fclose(data5);
 
-    //閾値の線
-    r=0.0;
-    data_file4="SISline.dat";
-    data4=fopen(data_file4,"w");
-    for(l=0;l<T;l++){
-        r=(double)l;
-        pr=r/(1-1/z);
-        //pr=(z*(z*(1/r)*(1-2*ep)-ep*(z-1)))/(ep*z*(z-1)*(1/r)*(1/r)+(z*z*(1-ep)-z*(1-2*ep))*(1/r)-ep*(z-1)*(z-1));
-        //def=r*((z+1)*pow(1/r,2.0)+(-2*(1-ep)+2*z*(1-ep)+pow(z,2.0))*(1/r)+(-4*ep*(z-1)+2*z*(1-ep)-pow(z,2.0)*(1-2*ep))+pow(pow((1/r)+z-2,2.0)*(pow((z+1)*(1/r),2.0)+(4*ep-2*z+2*z*z*(3-2*ep))*(1/r)+(4*ep*ep+4*ep*z*(1-2*ep)+z*z*pow(1-2*ep,2.0))),0.5))/(2*(-(1/r)+(1-ep)*(z-1)*(z-2)));
-        fprintf(data4,"%f\t%f\n", r,pr);
-    }
-    fclose(data4);printf("%f\n",r);
-    gp=popen("gnuplot -persist","w");
-        fprintf(gp,"set terminal png\n");
-        fprintf(gp,"set logscale\n");
-        // fprintf(gp,"set output 'Addefunction_f_%2f_P_%2f.png'\n",F_list[0],P_list[0]);
-        fprintf(gp,"set output 'SISline.png'\n");
 
-        
-        fprintf(gp,"set xrange [0:%d]\n",T+500);
-        fprintf(gp,"set xlabel 'alpha'\n");
-        fprintf(gp,"set yrange [0:%d]\n",T+500);//5.0
-        fprintf(gp,"set ylabel 'beta'\n");
-        fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 linecolor rgb 'red' title \"first beta=%f \",\'%s\' using 1:2 with points pointtype 1\n",data_file4,b,data_file5);
-        //fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:3 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:2 with points pointtype 1\n",data_file4,data_file4,data_file5);
 
-    // for(i=0;i<T;i++){
-    //     y1[i]=y1[i]/Q;y2[i]=y2[i]/Q;y3[i]=y3[i]/Q;y4[i]=y4[i]/Q;y5[i]=y5[i]/Q;y6[i]=y6[i]/Q;y7[i]=y7[i]/Q;
-    // }
+    //printf("B_list[0]=%f\n",B_list[0]);
+    //S,Iなどの時間変遷図(after)
+                 data_file3="Newtonline.dat";
+                 data_file2="SIRDot.dat";
+                 data3=fopen(data_file3,"w");
+                 for(l=0;l<T;l++){
+                     fprintf(data3,"%f\t%f\t%f\t%f\n",A_list[l],B_list[l],A2_list[l],B2_list[l]);
+                 }
+                 fclose(data3);
+                 gp=popen("gnuplot -persist","w");
+                 fprintf(gp,"set logscale\n");
+                 fprintf(gp,"set terminal png\n");
+                
+                 fprintf(gp,"set output 'NewtonSIR0line.png'\n");
+            
 
-    //図の描画
-        // data_file1="Linear.dat";
-        // // data_file1="outadde_f.dat";
-        // data1=fopen(data_file1,"w");
-        // for(l=0;l<4;l++){
-        //     fprintf(data1,"%f\t%f\n",y2[l]*c,y2[l]);
-        // }
-        // fclose(data1);
-        // gp=popen("gnuplot -persist","w");
-        // fprintf(gp,"set terminal png\n");
-        // fprintf(gp,"set logscale\n");
-        // // fprintf(gp,"set output 'Addefunction_f_%2f_P_%2f.png'\n",F_list[0],P_list[0]);
-        // fprintf(gp,"set output 'Linear.png'\n");
-
-        
-        // fprintf(gp,"set xrange [0:%d]\n",100);
-        // fprintf(gp,"set xlabel 'alpha'\n");
-        // fprintf(gp,"set yrange [0:%d]\n",500);//5.0
-        // fprintf(gp,"set ylabel 'beta'\n");
-        // fprintf(gp,"f(x)=(8/7)*(1+x)\n");
-
-        // fprintf(gp,"plot \'%s\' using 1:2 with points pointtype 1,f(x) with lines linetype 1 linecolor rgb 'red'\n",data_file1);
-        // fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"f=%f \"",data_file1,F_list[0]);
-        // for(l=1;l<6;l++){
-        //     fprintf(gp,",\'%s\' using 1:%d with lines linetype %d title \"f=%f \"",data_file1,l+2,l+1,F_list[l]);
-        // }
-        // fprintf(gp,",\'%s\' using 1:%d with lines linetype %d title \"f=%f \"\n",data_file1,9,8,F_list[6]);
-        
-        
-        
-        pclose(gp);
-
+                
+                 fprintf(gp,"set xrange [0:%d]\n",T+500);
+                 fprintf(gp,"set xlabel 'r'\n");
+                 fprintf(gp,"set yrange [0:%d]\n",T+500);
+                 fprintf(gp,"set ylabel 'beta'\n");
+                  //5.0
+                
+                 //fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"a= %f  S \",\'%s\' using 1:3 with lines linetype 3 title \"I \",\'%s\' using 1:4 with lines linetype 4 title \"0\"\n",data_file3,A_list[h],data_file3,data_file3);
+                 fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 title \"exline\",\'%s\' using 3:4 with lines linetype 2 title \"diseasefree \",\'%s\' using 1:2 with points pointtype 1 title \"point \"\n",data_file3,data_file3,data_file2);
+                 pclose(gp);
 
 
 }
@@ -507,11 +607,11 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
         }
                     
-       if(ni==0){vir=0;}             
-        else{vir=(double)vir/ni;}
+                    
+        vir=(double)vir/ni;
     x[j]=j;//printf("%d\n",ni);
     y[j]=vir;
-    return vir;
+
     
     // if(f_size==0){
     //     y1[j]=y1[j]+vir;

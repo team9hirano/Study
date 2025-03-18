@@ -7,14 +7,14 @@
 #define N 200//200
 #define a_max 4.767 // 4.767
 #define a_min 0.2
-#define b_max 200.0 // 4.767
+#define b_max 500.0 // 4.767
 #define b_min 5.0
 #define mu 0.5
 #define ep 0.8093
-#define v_muu 2.0//2.0
+#define v_muu 20.0//2.0
 #define d 1.0
 #define dt 1.0/(b_max+d+1.0)
-#define M  (int)b_max+d+800 //b_max+1000
+#define M  (int)b_max+d+300 //b_max+1000
 #define T  500
 #define T_f 2000
 #define z 4.0
@@ -26,11 +26,11 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
 
 int main(){
     double con_a[N][N],P_list[2]={0.0},con_b[N][N],F_list[7]={0.5};//{0.1,0.5,1.0,2.0,3.0,10.0,100.0}
-    double G_list[15]={0.1,0.2,0.3,0.4,0.5,0.7,0.9,1.0,2.0,3.0,4.0,6.0,7.0,8.0,10.0};//5.0,7.0,8.0,9.0,10.0,15.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0,100.0
+    double G_list[15]={5.0,10.0,15.0,20.0,30.0,50.0,70.0,90.0,100.0,200.0};//0.1,0.2,0.3,0.4,0.5,0.7,0.9,1.0,2.0,3.0,4.0,6.0,7.0,8.0,10.0
     int i,j,k,l,m,h,q,con[N][N],Rsize,n_max,n_min,n;
     double a,b,c,pr,def,r;
     a=1.0;
-    b=10.0;Rsize=15;c=0.0;
+    b=400.0;Rsize=10;c=0.0;
     FILE *gp,*data1,*data2,*data3,*data4,*data5,*data6;
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
 
@@ -251,27 +251,27 @@ int main(){
 
     //閾値の線
     r=1.0;
-    data_file4="SIRS.dat";
-    data4=fopen(data_file4,"w");
-    for(l=0;l<10000;l++){
-        r=(double)1.0+(double)0.05*l;
-        pr=(z*(z*(1/r)*(1-2*ep)-ep*(z-1)))/(ep*z*(z-1)*(1/r)*(1/r)+(z*z*(1-ep)-z*(1-2*ep))*(1/r)-ep*(z-1)*(z-1));
-        def=r*((z+1)*pow(1/r,2.0)+(-2*(1-ep)+2*z*(1-ep)+pow(z,2.0))*(1/r)+(-4*ep*(z-1)+2*z*(1-ep)-pow(z,2.0)*(1-2*ep))+pow(pow((1/r)+z-2,2.0)*(pow((z+1)*(1/r),2.0)+(4*ep-2*z+2*z*z*(3-2*ep))*(1/r)+(4*ep*ep+4*ep*z*(1-2*ep)+z*z*pow(1-2*ep,2.0))),0.5))/(2*(-(1/r)+(1-ep)*(z-1)*(z-2)));
-        fprintf(data4,"%f\t%f\t%f\n", r,pr,def);
-    }
-    fclose(data4);printf("%f\n",r);
+    data_file4="NewtonSIRSline.dat";
+    // data4=fopen(data_file4,"w");
+    // for(l=0;l<10000;l++){
+    //     r=(double)1.0+(double)0.05*l;
+    //     pr=(z*(z*(1/r)*(1-2*ep)-ep*(z-1)))/(ep*z*(z-1)*(1/r)*(1/r)+(z*z*(1-ep)-z*(1-2*ep))*(1/r)-ep*(z-1)*(z-1));
+    //     def=r*((z+1)*pow(1/r,2.0)+(-2*(1-ep)+2*z*(1-ep)+pow(z,2.0))*(1/r)+(-4*ep*(z-1)+2*z*(1-ep)-pow(z,2.0)*(1-2*ep))+pow(pow((1/r)+z-2,2.0)*(pow((z+1)*(1/r),2.0)+(4*ep-2*z+2*z*z*(3-2*ep))*(1/r)+(4*ep*ep+4*ep*z*(1-2*ep)+z*z*pow(1-2*ep,2.0))),0.5))/(2*(-(1/r)+(1-ep)*(z-1)*(z-2)));
+    //     fprintf(data4,"%f\t%f\t%f\n", r,pr,def);
+    // }
+    // fclose(data4);printf("%f\n",r);
     gp=popen("gnuplot -persist","w");
         fprintf(gp,"set terminal png\n");
-        fprintf(gp,"set logscale\n");
+        //fprintf(gp,"set logscale\n");
         // fprintf(gp,"set output 'Addefunction_f_%2f_P_%2f.png'\n",F_list[0],P_list[0]);
         fprintf(gp,"set output 'SIRS.png'\n");
 
         
-        fprintf(gp,"set xrange [1:%d]\n",500);
+        fprintf(gp,"set xrange [0:%d]\n",500);
         fprintf(gp,"set xlabel 'gamma'\n");
-        fprintf(gp,"set yrange [1:%d]\n",500);//5.0
+        fprintf(gp,"set yrange [0:%d]\n",500);//5.0
         fprintf(gp,"set ylabel 'beta'\n");
-        fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:3 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:2 with points pointtype 1\n",data_file4,data_file4,data_file5);
+        fprintf(gp,"plot \'%s\' using 1:2 with lines linetype 1 linecolor rgb 'red',\'%s\' using 1:2 with points pointtype 1\n",data_file4,data_file5);
 
     // for(i=0;i<T;i++){
     //     y1[i]=y1[i]/Q;y2[i]=y2[i]/Q;y3[i]=y3[i]/Q;y4[i]=y4[i]/Q;y5[i]=y5[i]/Q;y6[i]=y6[i]/Q;y7[i]=y7[i]/Q;
@@ -328,7 +328,7 @@ double infection(int con[][N],double con_a[][N],double con_b[][N],double P_list[
     char *data_file1,*data_file2,*data_file3,*data_file4,*data_file5,*data_file6;
     srand((unsigned int)time(NULL));
 
-    if(g==0){v_mu=0;MM=30;}else{v_mu=v_muu;MM=M;} //100,M
+    if(g==0){v_mu=0;MM=5;}else{v_mu=v_muu;MM=M;} //100,M
     for(j=0;j<T;j++){ //M
         double vir;
         int ni,ne;
