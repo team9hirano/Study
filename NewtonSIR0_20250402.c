@@ -50,22 +50,22 @@ int main(){
         A_list[m]=R;
         B_list[m]=(double)b_max;
         
-        for(h=b_max;h>0;h--){
+        for(h=0;h<b_max;h--){
             beta=(double)h;
             number=12;
            //if(count > count_max)break;
            //初期化
-            A=0.25;
-            B=0.25;
-            C=0.25;
-            D=1.0;
-            E=0.0;
+            A=0.3;
+            B=0.1;
+            C=0.5;
+            D=0.25;
+            E=0.25;
             F=0.25;
             G=0.25;
             I=0.25;J=0.25;
-            rhos=0.0;
-            rhoi=0.0;
-            rhor=0.0;
+            rhos=0.5;
+            rhoi=0.1;
+            rhor=0.1;
             //R=5.0;
             //beta=100.0;
             befA=A;befB=B;befC=C;befD=D;befF=F;befG=G;befJ=J;befI=I;befrhos=rhos;befrhoi=rhoi;befrhor=rhor;
@@ -305,7 +305,7 @@ int main(){
                 
                 if(fabs(r[0])<0.01&&fabs(r[1])<0.01&&fabs(r[2])<0.01&&fabs(r[3])<0.01&&fabs(r[4])<0.01&&fabs(r[5])<0.01&&fabs(r[6])<0.01&&fabs(r[7])<0.01&&fabs(r[8])<0.01&&fabs(r[9])<0.01&&fabs(r[10])<0.01&&fabs(r[11])<0.01){
                     //count=count+1;
-                    printf("絶滅平衡点安定性あり\n");
+                    printf("diseasefree平衡点安定性あり\n");
                     printf("R=%f,beta=%fの時\nrhos=%f,rhoi=%f,rhor=%f,A=%f,B=%f,C=%f,D=%f,E=%f,F=%f,G=%f,I=%f,J=%f\n",R,beta,rhos,rhoi,rhor,A,B,C,D,E,F,G,I,J);
                     break;
                     // if(){   //r*B-d,beta*x-(d+alpha+gamma) or R*B-beta*A-d
